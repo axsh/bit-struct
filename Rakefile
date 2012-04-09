@@ -2,36 +2,44 @@
 # configured in this Rakefile. The .rake files in the tasks directory
 # are where the options are used.
 
+require 'rubygems'
+require 'rubyforge'
+require 'psych'
+
+require 'syck'
+require 'yaml'
+YAML::ENGINE.yamler = "syck" if RUBY_VERSION >= "1.9.2"
+
 begin
   require 'bones'
-  Bones.setup
 rescue LoadError
-  begin
-    load 'tasks/setup.rb'
-  rescue LoadError
-    raise RuntimeError, '### please install the "bones" gem ###'
-  end
+  raise RuntimeError, '### please install the "bones" gem ###'
 end
 
 ensure_in_path 'lib'
 require 'bit-struct/bit-struct'
 
-#task :default => 'spec:run'
+task :default => 'spec:run'
 
-PROJ.name = 'bit-struct'
-PROJ.authors = 'Joel VanderWerf'
-PROJ.email = 'vjoel@users.sourceforge.net'
-PROJ.url = 'http://rubyforge.org/projects/bit-struct/'
-PROJ.version = BitStruct::VERSION
-PROJ.rubyforge.name = 'bit-struct'
-PROJ.summary = "Library for packed binary data stored in ruby Strings"
-PROJ.description = <<END
+#task :default => 'test:run'
+#task 'gem:release' => 'test:run'
+
+Bones {
+  name 'bit-struct'
+  authors 'Joel VanderWerf'
+  email 'vjoel@users.sourceforge.net'
+  url 'http://rubyforge.org/projects/bit-struct/'
+  version BitStruct::VERSION
+  rubyforge.name 'bit-struct'
+  summary "Library for packed binary data stored in ruby Strings"
+  description <<END
 Library for packed binary data stored in ruby Strings. Useful for accessing fields in network packets and binary files.
 END
-PROJ.changes = File.read(PROJ.history_file)[/^\w.*?(?=^\w)/m]
+  changes File.read(history_file)[/^\w.*?(?=^\w)/m]
 
-PROJ.spec.opts << '--color'
-PROJ.test.files = Dir["test/*.rb"]
+  spec.opts << '--color'
+  test.files Dir["test/*.rb"]
+}
 
 task :release => ["gem:release", "doc:release"]
 

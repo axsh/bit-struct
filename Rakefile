@@ -2,45 +2,24 @@
 # configured in this Rakefile. The .rake files in the tasks directory
 # are where the options are used.
 
+$LOAD_PATH.unshift  File.expand_path('../lib', __FILE__)
+require 'bit-struct'
+
 require 'rubygems'
-require 'rubyforge'
-require 'psych'
+require 'rubygems/package_task'
+require 'rake/testtask'
+require 'rake/clean'
 
-require 'syck'
-require 'yaml'
-YAML::ENGINE.yamler = "syck" if RUBY_VERSION >= "1.9.2"
+CLOBBER << %w(pkg)
 
-begin
-  require 'bones'
-rescue LoadError
-  raise RuntimeError, '### please install the "bones" gem ###'
+task :default => 'test'
+
+Rake::TestTask.new do |t|
+  t.libs << "test"
+  t.test_files = FileList['test/test*.rb']
+  t.verbose = true
 end
 
-ensure_in_path 'lib'
-require 'bit-struct/bit-struct'
-
-task :default => 'spec:run'
-
-#task :default => 'test:run'
-#task 'gem:release' => 'test:run'
-
-Bones {
-  name 'bit-struct'
-  authors 'Joel VanderWerf'
-  email 'vjoel@users.sourceforge.net'
-  url 'http://rubyforge.org/projects/bit-struct/'
-  version BitStruct::VERSION
-  rubyforge.name 'bit-struct'
-  summary "Library for packed binary data stored in ruby Strings"
-  description <<END
-Library for packed binary data stored in ruby Strings. Useful for accessing fields in network packets and binary files.
-END
-  changes File.read(history_file)[/^\w.*?(?=^\w)/m]
-
-  spec.opts << '--color'
-  test.files Dir["test/*.rb"]
-}
-
-task :release => ["gem:release", "doc:release"]
-
-# EOF
+spec = Gem::Specification.load(File.expand_path('../bit-struct.gemspec', __FILE__))
+Gem::PackageTask.new(spec) do |pkg|
+end

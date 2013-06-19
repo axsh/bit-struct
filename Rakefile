@@ -20,30 +20,6 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 
-spec = Gem::Specification.new do |s|
-  s.name = 'bit-struct'
-  s.authors = 'Joel VanderWerf'
-  s.email = 'vjoel@users.sourceforge.net'
-  s.homepage = 'http://rubyforge.org/projects/bit-struct/'
-  s.license = 'Ruby license'
-  s.version = BitStruct::VERSION
-  s.rubyforge_project = 'bit-struct'
-  s.summary = "Library for packed binary data stored in ruby Strings"
-  s.description = <<END
-Library for packed binary data stored in ruby Strings. Useful for accessing fields in network packets and binary files.
-END
-  s.required_ruby_version = '>= 1.9.2'
-
-  s.files = Dir['lib/**/*.rb'] + %w(History.txt Rakefile  README.txt TODO)
-  s.test_files = Dir["test/*.rb"]
-end
-
+spec = Gem::Specification.load(File.expand_path('../bit-struct.gemspec', __FILE__))
 Gem::PackageTask.new(spec) do |pkg|
-end
-
-desc "Generate or update .gemspec file"
-task :gemspec do
-  File.open(spec.name + ".gemspec", 'w'){ |f|
-    f.write(spec.to_ruby)
-  }
 end

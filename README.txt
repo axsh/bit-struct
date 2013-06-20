@@ -39,15 +39,7 @@ Field options (specifiable as :foo => val or "foo" => val) include:
 
 == Installation
 
-For .gem:
-
   gem install bit-struct
-
-For .tgz, unpack and then:
-
-  ruby install.rb config
-  ruby install.rb setup
-  ruby install.rb install
 
 == Uses
 
